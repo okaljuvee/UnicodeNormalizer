@@ -13,7 +13,8 @@ These commands assume that you have installed **Java JDK 8+**:
 ```shell script
 > git clone https://github.com/okaljuvee/UnicodeNormalizer.git
 > cd UnicodeNormalizer
-> gradlew runParser --args "sample.csv output.csv"
+> chmod u+x gradlew
+> ./gradlew runNormalizer --args "sample.csv output.csv"
 ```
 
 
