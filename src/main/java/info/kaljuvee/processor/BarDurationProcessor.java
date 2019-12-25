@@ -1,7 +1,6 @@
 package info.kaljuvee.processor;
 
 import info.kaljuvee.model.UserRecord;
-
 import java.math.BigDecimal;
 
 public class BarDurationProcessor extends FieldProcessor {
@@ -13,7 +12,8 @@ public class BarDurationProcessor extends FieldProcessor {
     @Override
     public void parseInto(String value, UserRecord record) {
         validateInputs(value, record);
-        record.setBarDuration(parseSecond(value));
+        // Parse the time duration into seconds in floating-point value
+        record.setBarDuration(parseSeconds(value));
     }
 
     @Override

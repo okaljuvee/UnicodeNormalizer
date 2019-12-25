@@ -1,0 +1,4 @@
+#!/bin/bash
+
+chmod u+x gradlew
+./gradlew runNormalizer --args "$1 $2"

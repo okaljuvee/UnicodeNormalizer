@@ -11,11 +11,6 @@ public class ZipCodeProcessor extends FieldProcessor {
         super(key);
     }
 
-    /**
-     *
-     * $Assumption 4: ZIP codes should be formatted as 5 digits. If there are less than 5 digits, assume 0 as the prefix.
-     */
-
     @Override
     public void parseInto(String value, UserRecord record)  {
         validateInputs(value, record);
@@ -23,11 +18,6 @@ public class ZipCodeProcessor extends FieldProcessor {
         record.setZip(IntStream.range(0, 5-value.length()).mapToObj(i -> "0").collect(Collectors.joining()) + value);
     }
 
-    /**
-     *
-     * @param record
-     * @return
-     */
     @Override
     public String normalize(UserRecord record) {
         return record.getZip();

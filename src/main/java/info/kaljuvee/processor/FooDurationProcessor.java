@@ -13,7 +13,8 @@ public class FooDurationProcessor extends FieldProcessor {
     @Override
     public void parseInto(String value, UserRecord record) {
         validateInputs(value, record);
-        record.setFooDuration(parseSecond(value));
+        // Parse the time duration into seconds in floating-point value
+        record.setFooDuration(parseSeconds(value));
     }
 
     @Override

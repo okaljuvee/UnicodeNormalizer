@@ -18,6 +18,7 @@ public class NameProcessor extends FieldProcessor {
 
     @Override
     public String normalize(UserRecord record) {
+        // The processor converts all names to all upper-case letters
         return record.getFullName().toUpperCase(Locale.getDefault());
     }
 }

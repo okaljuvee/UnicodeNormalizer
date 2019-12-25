@@ -3,6 +3,10 @@ package info.kaljuvee.model;
 import java.time.ZonedDateTime;
 import java.util.StringJoiner;
 
+/**
+ * Model object representing the state of a user record (i.e. it does not necessarily contain data in the format
+ * that was either parsed or written into the file, but can be transformed into output data format of choice.)
+ */
 public class UserRecord {
 
     private ZonedDateTime timestamp;

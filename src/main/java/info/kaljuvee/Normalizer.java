@@ -12,6 +12,13 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * General purpose CSV normalizer based on an abstract processor, which can be assigned to any CSV column by key and
+ * linked with other processors, giving the ability to define separate parsing and normalization rules for every field
+ * in the CSV file.
+ *
+ * @author Oliver Kaljuvee
+ */
 public class Normalizer {
 
     private final static Logger log = Logger.getLogger(Normalizer.class.getName());
@@ -22,7 +29,6 @@ public class Normalizer {
      * @param args Program arguments containing the input file name and output directory.  Example:
      *
      * > java Normalizer sample.csv output.csv
-     *
      */
     public static void main(String... args) {
         if(args.length != 2) {
@@ -32,6 +38,11 @@ public class Normalizer {
         String inputFile = args[0];
         String outputFile = args[1];
 
+        /*
+         * The normalizer takes a list of processors that correspond to the headers of the CSV file.  Note that the
+         * order in which these processors are linked will correspond the order in which the columns will be written in
+         * the output file.
+         */
         List<FieldProcessor>  processors = new ArrayList<>(Arrays.asList(
                 new TimestampProcessor("Timestamp"),
                 new AddressProcessor("Address"),
@@ -48,9 +59,17 @@ public class Normalizer {
     private String inputFile;
     private String outputFile;
     private List<String> headers;
+    // Maintains the 'state' of the records that get parsed from the CSV file
     private List<UserRecord> records;
     private List<FieldProcessor> processors;
 
+    /**
+     * Constructor
+     *
+     * @param inputFile Name of input CSV file
+     * @param outputFile Name of output CSV file
+     * @param processors List of processor to be used to parse and normalize each column
+     */
     public Normalizer(String inputFile, String outputFile, List<FieldProcessor> processors) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
@@ -77,13 +96,12 @@ public class Normalizer {
      * @param format Specifies the input file format.
      */
     public void parseInput(CSVFormat format) {
-        Iterable<CSVRecord> csv = null;
+        Iterable<CSVRecord> csv;
 
         try {
             csv = format.withHeader(headers.stream().toArray(String[]::new)).withFirstRecordAsHeader().parse(
                     new BufferedReader(
                             new InputStreamReader(
-                                    // $Assumption 1: the entire CSV is in the UTF-8 character set
                                     new FileInputStream(inputFile), StandardCharsets.UTF_8)));
         } catch(FileNotFoundException e) {
             log.info(String.format("Input file %s not found", inputFile));
@@ -111,6 +129,9 @@ public class Normalizer {
         log.info("Parsed " + records.size() + " records");
     }
 
+    /**
+     * Writes output to file using the processor list.
+     */
     private void writeOutput() {
         PrintWriter fileWriter = null;
         CSVPrinter csvFilePrinter = null;
@@ -135,9 +156,13 @@ public class Normalizer {
             e.printStackTrace();
         } finally {
             try {
-                fileWriter.flush();
-                fileWriter.close();
-                csvFilePrinter.close();
+                if(fileWriter != null) {
+                    fileWriter.flush();
+                    fileWriter.close();
+                }
+                if(csvFilePrinter != null) {
+                    csvFilePrinter.close();
+                }
             } catch (IOException e) {
                 log.info("Error while closing IO resources");
                 e.printStackTrace();
