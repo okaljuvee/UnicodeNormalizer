@@ -116,12 +116,14 @@ public class Normalizer {
         for(CSVRecord csvRecord : csv) {
             UserRecord userRecord = new UserRecord();
 
-            for(FieldProcessor processor : processors) {
-                try {
+            // If any of the processors fail, we want exclude the input row from further parsing
+            try {
+                for(FieldProcessor processor : processors) {
                     processor.parseInto(csvRecord.get(processor.getKey()), userRecord);
-                } catch (Exception e) {
-                    log.severe("Unable to parse the record, dropping: " + csvRecord + " with exception: " + e.getMessage());
                 }
+            } catch (Exception e) {
+                log.severe("Unable to parse the record, dropping: " + csvRecord + " with exception: " + e.getMessage());
+                continue;
             }
             records.add(userRecord);
         }
@@ -146,8 +148,14 @@ public class Normalizer {
                 Iterator<FieldProcessor> processorIterable = processors.iterator();
                 List<String> line = new LinkedList<>();
 
-                while(processorIterable.hasNext()) {
-                    line.add(processorIterable.next().normalize(record));
+                try {
+                    // If any of the processors fail, we want to exclude the record
+                    while(processorIterable.hasNext()) {
+                        line.add(processorIterable.next().normalize(record));
+                    }
+                } catch (Exception e) {
+                    log.severe("Unable to normalize the record, dropping: " + record + " with exception: " + e.getMessage());
+                    continue;
                 }
                 csvFilePrinter.printRecord(line);
             }
