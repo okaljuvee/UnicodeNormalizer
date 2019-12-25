@@ -26,7 +26,7 @@ On Windows, the last two commands should be replaced with:
 > ./gradlew runNormalizer --args "sample.csv output.csv"
 ```
 
-### Requirements
+#### Requirements
 
 The requirements for the exercise are listed and commented here:
 * One of the requirements was to use `stdin` and `stdout`.  I didn't have time to convert the argument-based 
